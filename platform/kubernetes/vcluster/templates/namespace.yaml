@@ -1,0 +1,12 @@
+{{- $vclusterNamespace := .Values.vcluster_config.namespace -}}
+{{- $psaEnabled := .Values.psa.enabled -}}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $vclusterNamespace }}
+  {{- if $psaEnabled }}
+  labels:
+    {{- range $config := .Values.psa.config }}
+    pod-security.kubernetes.io/{{ $config.action }}: {{ $config.level }}
+    {{- end }}
+  {{- end }}

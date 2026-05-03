@@ -1,0 +1,23 @@
+vcluster_config:
+  name: vcluster-a
+  namespace: vcluster-a
+  chart_version: "0.33.1"
+  # Optional YAML fragment merged by the upstream vcluster chart parser.
+  # Example:
+  # overrides: |
+  #   telemetry:
+  #     enabled: false
+  overrides: ""
+
+psa:
+  enabled: false
+  config: []
+
+argocd:
+  namespace: argocd
+  create_project: false
+  project: default
+  host_cluster_server: https://kubernetes.default.svc
+  source_repos:
+    - https://github.com/mario26rgl/cndro26-vcluster-cilium-poc.git
+  role_name: tenant-admin
