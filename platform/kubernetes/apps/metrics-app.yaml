@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metrics-app
+  namespace: argocd
+spec:
+  project: tenant-one
+  source:
+    repoURL: https://github.com/mario26rgl/cndro26-vcluster-cilium-poc
+    targetRevision: HEAD
+    path: platform/kubernetes/metrics
+  destination:
+    server: https://tenant-one.tenant-one
+    namespace: metrics-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 2
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2

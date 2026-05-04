@@ -1,0 +1,36 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  annotations:
+    argocd.argoproj.io/tracking-id: tenant-one-bootstrap:cilium.io/CiliumNetworkPolicy:tenant-one/metrics-app-scrape
+  creationTimestamp: "2026-05-04T21:39:01Z"
+  generation: 1
+  name: metrics-app-scrape
+  namespace: tenant-one
+  resourceVersion: "225877"
+  uid: 15bfd152-42f9-4480-9ff0-b193d28c0bbd
+spec:
+  endpointSelector:
+    matchLabels:
+      app: metrics-app
+      vcluster.loft.sh/managed-by: tenant-one
+      vcluster.loft.sh/namespace: metrics-app
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        app: platform-scraper
+        k8s:io.kubernetes.pod.namespace: platform-observability
+    toPorts:
+    - ports:
+      - port: "80"
+        protocol: TCP
+      rules:
+        http:
+        - method: GET
+          path: ^/metrics$
+status:
+  conditions:
+  - lastTransitionTime: "2026-05-04T21:39:01Z"
+    message: Policy validation succeeded
+    status: "True"
+    type: Valid

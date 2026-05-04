@@ -30,6 +30,6 @@ spec:
             - |
               while true; do
                 echo "Scraping /metrics..."
-                curl -sS http://tenant-metrics-x-metrics-app-x-tenant-one.tenant-one:80/metrics || echo "FAIL";
+                curl -sS http://{{ .Values.appName }}-x-{{ .Values.appNamespace }}-x-{{ .Values.vclusterName }}.{{ .Values.vclusterNamespace }}:80/metrics || echo "FAIL";
                 sleep 5;
               done

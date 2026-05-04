@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metrics-scraper
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mario26rgl/cndro26-vcluster-cilium-poc
+    targetRevision: HEAD
+    path: platform/kubernetes/scraper
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+    retry:
+      limit: 2
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2

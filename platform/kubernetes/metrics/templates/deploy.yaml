@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tenant-metrics
+  name: metrics-app
   namespace: metrics-app
   labels:
-    app: tenant-metrics
+    app: metrics-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tenant-metrics
+      app: metrics-app
   template:
     metadata:
       labels:
-        app: tenant-metrics
+        app: metrics-app
         vcluster-tenant: tenant1
     spec:
       containers:

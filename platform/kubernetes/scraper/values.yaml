@@ -1,0 +1,4 @@
+vclusterName: tenant-one
+vclusterNamespace: tenant-one
+appName: metrics-app
+appNamespace: metrics-app
