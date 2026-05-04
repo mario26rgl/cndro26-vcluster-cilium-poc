@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-scraper
+  namespace: platform-observability
+  labels:
+    app: platform-scraper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: platform-scraper
+  template:
+    metadata:
+      labels:
+        app: platform-scraper
+    spec:
+      containers:
+        - name: scraper
+          image: curlimages/curl:8.7.1
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: "128Mi"
+            requests:
+              cpu: "0.25"
+              memory: "64Mi"
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              while true; do
+                echo "Scraping /metrics..."
+                curl -sS http://tenant-metrics-x-metrics-app-x-tenant-one.tenant-one:80/metrics || echo "FAIL";
+                sleep 5;
+              done
