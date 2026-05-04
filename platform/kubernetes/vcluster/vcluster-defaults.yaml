@@ -101,6 +101,17 @@ policies:
           port: 443
         - protocol: TCP
           port: 8443
+      egress:
+      - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: metrics-server
+        ports:
+        - protocol: TCP
+          port: 10250
 
 
 telemetry:

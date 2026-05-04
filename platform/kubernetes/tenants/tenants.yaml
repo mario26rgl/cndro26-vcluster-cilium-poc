@@ -1,1 +1,55 @@
-tenants: []
+tenants:
+- name: tenant-one
+  namespace: tenant-one
+  project: tenant-one
+  chartVersion: "0.33.1"
+  sourceRepos:
+  - https://github.com/mario26rgl/cndro26-vcluster-cilium-poc.git
+  vclusterOverrides: |
+    policies:
+      resourceQuota:
+        enabled: true
+        quota:
+          requests.cpu: 10
+          requests.memory: 20Gi
+          limits.cpu: 20
+          limits.memory: 40Gi
+          services.loadbalancers: 1
+      networkPolicy:
+        enabled: true
+        workload:
+          publicEgress:
+            enabled: true
+            cidr: 0.0.0.0/0
+    controlPlane:
+      backingStore:
+        etcd:
+          deploy:
+            statefulSet:
+              persistence:
+                volumeClaim:
+                  size: 1Gi
+                  storageClass: hcloud-volumes
+  psa:
+    enabled: true
+    config:
+    - level: baseline
+      action: audit
+  argocdUser:
+      username: tenant-one-admin
+      roleName: tenant-admin
+      passwordHashSecretRef:
+        key: /argocd/tenants/tenant-one/user
+        property: passwordHash
+      passwordMtimeSecretRef:
+        key: /argocd/tenants/tenant-one/user
+        property: passwordMtime
+  repoCredentials:
+      enabled: true
+      authType: basic
+      name: tenant-one-repo
+      secretRef:
+        key: /argocd/tenants/tenant-one/repo
+        urlProperty: url
+        usernameProperty: username
+        passwordProperty: password

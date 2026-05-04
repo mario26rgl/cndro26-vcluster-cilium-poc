@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-pod-{{ .Values.namespace }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-pod-{{ .Values.namespace }}
+  template:
+    metadata:
+      labels:
+        app: test-pod-{{ .Values.namespace }}
+    spec:
+      containers:
+      - name: test
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "128Mi"
+          requests:
+            cpu: "0.25"
+            memory: "64Mi"
