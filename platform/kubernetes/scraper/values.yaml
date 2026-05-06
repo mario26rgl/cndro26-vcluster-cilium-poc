@@ -1,4 +1,4 @@
-vclusterName: tenant-one
-vclusterNamespace: tenant-one
+vclusterName: tenant-hybrid
+vclusterNamespace: tenant-hybrid
 appName: metrics-app
 appNamespace: metrics-app

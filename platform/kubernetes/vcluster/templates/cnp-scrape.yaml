@@ -14,7 +14,9 @@ spec:
       vcluster.loft.sh/managed-by: {{ $vclusterName }}
       vcluster.loft.sh/namespace: metrics-app
   ingress:
-    - fromEndpoints:
+    - authentication:
+        mode: "required"
+      fromEndpoints:
         # Only allow access from the scraper pods in platform-observability
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: platform-observability
