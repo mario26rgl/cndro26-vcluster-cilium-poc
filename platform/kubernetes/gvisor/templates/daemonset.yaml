@@ -24,12 +24,9 @@ spec:
       initContainers:
         - name: install-runsc
           image: {{ .Values.installer.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
-          env:
-            - name: INSTALL_DIR
-              value: {{ .Values.installer.installDir }}
           volumeMounts:
             - name: host-bin
               mountPath: {{ .Values.installer.installDir }}
@@ -40,9 +37,17 @@ spec:
             - -c
             - |
               set -e
-              echo "Installing gVisor binaries..."
-              cp /usr/local/bin/runsc {{ .Values.installer.installDir }}/runsc
-              cp /usr/local/bin/containerd-shim-runsc-v1 {{ .Values.installer.installDir }}/containerd-shim-runsc-v1
+              ARCH=$(uname -m)
+              case "$ARCH" in
+                x86_64)  ARCH=x86_64 ;;
+                aarch64) ARCH=aarch64 ;;
+                *) echo "Unsupported arch: $ARCH"; exit 1 ;;
+              esac
+
+              BASE="https://storage.googleapis.com/gvisor/releases/release/latest/${ARCH}"
+              echo "Downloading gVisor binaries from ${BASE}..."
+              wget -qO {{ .Values.installer.installDir }}/runsc "${BASE}/runsc"
+              wget -qO {{ .Values.installer.installDir }}/containerd-shim-runsc-v1 "${BASE}/containerd-shim-runsc-v1"
               chmod 755 {{ .Values.installer.installDir }}/runsc
               chmod 755 {{ .Values.installer.installDir }}/containerd-shim-runsc-v1
 
