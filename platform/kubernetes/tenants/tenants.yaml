@@ -9,7 +9,7 @@ tenants:
     sync:
       toHost:
         pods:
-          runtimeClassName: crun
+          runtimeClassName: runc
     policies:
       resourceQuota:
         enabled: true
