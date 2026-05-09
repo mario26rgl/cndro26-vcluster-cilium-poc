@@ -1,5 +1,0 @@
-apiVersion: v2
-name: gvisor
-description: Installs gVisor (runsc) on K3s nodes and registers it as a RuntimeClass
-type: application
-version: 0.1.0
