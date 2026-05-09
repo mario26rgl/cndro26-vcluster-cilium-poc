@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Values.argocdNamespace }}
 data:
 {{- range $tenant := .Values.tenants }}
-{{- $mode := default local $tenant.tenantConfig.auth.mode }}
+{{- $mode := default "local" $tenant.tenantConfig.auth.mode }}
 {{- $enabled := eq $mode "local" }}
 {{- if $enabled }}
 {{- $username := (printf "%s-admin" $tenant.name) }}
@@ -22,7 +22,7 @@ metadata:
   namespace: {{ .Values.argocdNamespace }}
 data:
 {{- range $tenant := .Values.tenants }}
-{{- $mode := default local $tenant.tenantConfig.auth.mode }}
+{{- $mode := default "local" $tenant.tenantConfig.auth.mode }}
 {{- $enabled := eq $mode "local" }}
 {{- if $enabled }}
 {{- $username := (printf "%s-admin" $tenant.name) }}
@@ -36,7 +36,7 @@ data:
 {{- end }}
 {{- end }}
 {{- range $tenant := .Values.tenants }}
-{{- $mode := default local $tenant.tenantConfig.auth.mode }}
+{{- $mode := default "local" $tenant.tenantConfig.auth.mode }}
 {{- $enabled := eq $mode "local" }}
 {{- if $enabled }}
 {{- $username := (printf "%s-admin" $tenant.name) }}
