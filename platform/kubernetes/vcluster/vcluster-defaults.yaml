@@ -37,7 +37,6 @@ sync:
       all: false
     pods:
       enabled: true
-      runtimeClassName: ""
     ingresses:
       enabled: false
     networkPolicies:
@@ -65,7 +64,7 @@ controlPlane:
           persistence:
             volumeClaim:
               enabled: true
-              size: 10Gi
+              size: 1Gi
               storageClass: hcloud-volumes
   serviceMonitor:
     enabled: false

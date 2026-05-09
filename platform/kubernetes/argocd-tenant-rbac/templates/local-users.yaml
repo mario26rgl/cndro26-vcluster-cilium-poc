@@ -6,9 +6,10 @@ metadata:
   namespace: {{ .Values.argocdNamespace }}
 data:
 {{- range $tenant := .Values.tenants }}
-{{- $enabled := default true $tenant.argocdUser.enabled }}
+{{- $mode := default local $tenant.tenantConfig.auth.mode }}
+{{- $enabled := eq $mode "local" }}
 {{- if $enabled }}
-{{- $username := default (printf "%s-admin" $tenant.name) $tenant.argocdUser.username }}
+{{- $username := (printf "%s-admin" $tenant.name) }}
   accounts.{{ $username }}: login
   accounts.{{ $username }}.enabled: "true"
 {{- end }}
@@ -21,11 +22,12 @@ metadata:
   namespace: {{ .Values.argocdNamespace }}
 data:
 {{- range $tenant := .Values.tenants }}
-{{- $enabled := default true $tenant.argocdUser.enabled }}
+{{- $mode := default local $tenant.tenantConfig.auth.mode }}
+{{- $enabled := eq $mode "local" }}
 {{- if $enabled }}
-{{- $username := default (printf "%s-admin" $tenant.name) $tenant.argocdUser.username }}
+{{- $username := (printf "%s-admin" $tenant.name) }}
 {{- $project := default (printf "tenant-%s" $tenant.name) $tenant.project }}
-{{- $roleName := default "tenant-admin" $tenant.argocdUser.roleName }}
+{{- $roleName := "tenant-admin" }}
   policy.tenant-{{ $tenant.name }}.csv: |
     p, proj:{{ $project }}:{{ $roleName }}, applications, *, {{ $project }}/*, allow
     p, proj:{{ $project }}:{{ $roleName }}, logs, get, {{ $project }}/*, allow
@@ -34,9 +36,10 @@ data:
 {{- end }}
 {{- end }}
 {{- range $tenant := .Values.tenants }}
-{{- $enabled := default true $tenant.argocdUser.enabled }}
-{{- if and $enabled $tenant.argocdUser.passwordHashSecretRef $tenant.argocdUser.passwordHashSecretRef.key }}
-{{- $username := default (printf "%s-admin" $tenant.name) $tenant.argocdUser.username }}
+{{- $mode := default local $tenant.tenantConfig.auth.mode }}
+{{- $enabled := eq $mode "local" }}
+{{- if $enabled }}
+{{- $username := (printf "%s-admin" $tenant.name) }}
 ---
 apiVersion: external-secrets.io/v1
 kind: ExternalSecret
@@ -44,7 +47,7 @@ metadata:
   name: argocd-user-{{ $tenant.name }}
   namespace: {{ $.Values.argocdNamespace }}
 spec:
-  refreshInterval: {{ default "5m" $tenant.argocdUser.refreshInterval }}
+  refreshInterval: "5m"
   secretStoreRef:
     name: {{ $.Values.aws.secretStore.name }}
     kind: {{ $.Values.aws.secretStore.kind }}
@@ -58,17 +61,15 @@ spec:
         decodingStrategy: None
         metadataPolicy: None
         nullBytePolicy: Ignore
-        key: {{ $tenant.argocdUser.passwordHashSecretRef.key }}
-        property: {{ default "passwordHash" $tenant.argocdUser.passwordHashSecretRef.property }}
-{{- if and $tenant.argocdUser.passwordMtimeSecretRef $tenant.argocdUser.passwordMtimeSecretRef.key }}
+        key: /argocd/tenants/{{ $tenant.name }}/user
+        property: "passwordHash"
     - secretKey: accounts.{{ $username }}.passwordMtime
       remoteRef:
         conversionStrategy: Default 
         decodingStrategy: None
         metadataPolicy: None
         nullBytePolicy: Ignore
-        key: {{ $tenant.argocdUser.passwordMtimeSecretRef.key }}
-        property: {{ default "passwordMtime" $tenant.argocdUser.passwordMtimeSecretRef.property }}
-{{- end }}
+        key: /argocd/tenants/{{ $tenant.name }}/user
+        property: "passwordMtime"
 {{- end }}
 {{- end }}
