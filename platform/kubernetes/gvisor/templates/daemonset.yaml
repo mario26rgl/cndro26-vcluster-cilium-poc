@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: gvisor-installer
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: gvisor-installer
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: gvisor-installer
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: gvisor-installer
+    spec:
+      hostPID: true
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+      tolerations:
+        - operator: Exists
+      initContainers:
+        - name: install-runsc
+          image: {{ .Values.installer.image }}
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+          env:
+            - name: INSTALL_DIR
+              value: {{ .Values.installer.installDir }}
+          volumeMounts:
+            - name: host-bin
+              mountPath: {{ .Values.installer.installDir }}
+            - name: containerd-config
+              mountPath: /host/containerd-config
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "Installing gVisor binaries..."
+              cp /usr/local/bin/runsc {{ .Values.installer.installDir }}/runsc
+              cp /usr/local/bin/containerd-shim-runsc-v1 {{ .Values.installer.installDir }}/containerd-shim-runsc-v1
+              chmod 755 {{ .Values.installer.installDir }}/runsc
+              chmod 755 {{ .Values.installer.installDir }}/containerd-shim-runsc-v1
+
+              echo "Writing containerd runtime config drop-in..."
+              mkdir -p /host/containerd-config
+              cat > /host/containerd-config/gvisor.toml << 'EOF'
+              [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runsc]
+                runtime_type = "io.containerd.runsc.v1"
+              EOF
+
+              echo "Signaling containerd to reload config..."
+              nsenter --target 1 --mount --pid -- \
+                kill -HUP $(nsenter --target 1 --mount --pid -- \
+                  pgrep -x containerd | head -1) || true
+
+              echo "gVisor installation complete."
+      containers:
+        - name: pause
+          image: gcr.io/pause:3.9
+          resources:
+            requests:
+              cpu: 1m
+              memory: 8Mi
+            limits:
+              cpu: 10m
+              memory: 16Mi
+      volumes:
+        - name: host-bin
+          hostPath:
+            path: {{ .Values.installer.installDir }}
+            type: DirectoryOrCreate
+        - name: containerd-config
+          hostPath:
+            path: {{ .Values.installer.containerdConfigDir }}
+            type: DirectoryOrCreate

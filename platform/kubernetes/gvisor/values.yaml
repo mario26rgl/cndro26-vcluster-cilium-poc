@@ -1,0 +1,15 @@
+# gVisor installer DaemonSet image
+# Uses the official gVisor containerd shim installer
+installer:
+  image: gcr.io/gvisor-prebuilt/gvisor-containerd-shim-installer:latest
+  # Directory where K3s stores its containerd config
+  containerdConfigDir: /var/lib/rancher/k3s/agent/etc/containerd
+  # Host path where runsc binary will be installed
+  installDir: /usr/local/bin
+
+# RuntimeClass name exposed to workloads
+runtimeClassName: gvisor
+
+# Node selector to target only Linux nodes (safe default)
+nodeSelector:
+  kubernetes.io/os: linux

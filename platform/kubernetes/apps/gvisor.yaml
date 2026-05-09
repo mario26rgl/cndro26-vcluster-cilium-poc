@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gvisor
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/mario26rgl/cndro26-vcluster-cilium-poc.git'
+    targetRevision: main
+    path: platform/kubernetes/gvisor
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: -1
+      backoff:
+        duration: "5s"
+        factor: 2
+        maxDuration: "3m"
