@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: metrics-app
   namespace: metrics-app
+  annotations:
+    service.cilium.io/global: "false"
 spec:
   selector:
     app: metrics-app

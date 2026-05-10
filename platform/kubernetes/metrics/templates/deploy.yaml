@@ -16,7 +16,6 @@ spec:
         app: metrics-app
         vcluster-tenant: tenant1
     spec:
-      nodeName: edge-node-external
       containers:
         - name: metrics-app
           image: mariorgl/cndro26-metrics:amd64

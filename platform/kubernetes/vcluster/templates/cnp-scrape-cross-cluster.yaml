@@ -5,7 +5,7 @@
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: metrics-app-scrape
+  name: metrics-app-scrape-cross-cluster
   namespace: {{ $vclusterNamespace }}
 spec:
   endpointSelector:
@@ -14,13 +14,12 @@ spec:
       vcluster.loft.sh/managed-by: {{ $vclusterName }}
       vcluster.loft.sh/namespace: metrics-app
   ingress:
-    - authentication:
-        mode: "required"
-      fromEndpoints:
+    - fromEndpoints:
         # Only allow access from the scraper pods in platform-observability
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: platform-observability
             app: platform-scraper
+            # io.cilium.k8s.policy.cluster: cndro-eks-poc
       toPorts:
         - ports:
             - port: "80"
