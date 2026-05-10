@@ -4,13 +4,13 @@ metadata:
   name: metrics-app
   namespace: argocd
 spec:
-  project: tenant-hybrid
+  project: tenant-one
   source:
     repoURL: https://github.com/mario26rgl/cndro26-vcluster-cilium-poc
     targetRevision: HEAD
     path: platform/kubernetes/metrics
   destination:
-    server: https://tenant-hybrid.tenant-hybrid
+    server: https://tenant-one.tenant-one
     namespace: metrics-app
   syncPolicy:
     automated:
