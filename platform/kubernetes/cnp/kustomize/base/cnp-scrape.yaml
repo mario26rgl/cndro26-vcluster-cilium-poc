@@ -1,32 +1,23 @@
-
-{{- if .Values.metrics_scrape.enabled }}
-{{- $vclusterName := .Values.vcluster_config.name -}}
-{{- $vclusterNamespace := .Values.vcluster_config.namespace -}}
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
-  name: metrics-app-scrape-cross-cluster
-  namespace: {{ $vclusterNamespace }}
+  name: metrics-app-scrape
 spec:
   endpointSelector:
     matchLabels:
       app: metrics-app
-      vcluster.loft.sh/managed-by: {{ $vclusterName }}
+      vcluster.loft.sh/managed-by: vcluster-placeholder
       vcluster.loft.sh/namespace: metrics-app
   ingress:
     - fromEndpoints:
-        # Only allow access from the scraper pods in platform-observability
         - matchLabels:
             k8s:io.kubernetes.pod.namespace: platform-observability
             app: platform-scraper
-            # io.cilium.k8s.policy.cluster: cndro-eks-poc
       toPorts:
         - ports:
             - port: "80"
               protocol: TCP
           rules:
             http:
-              # Allow only GET /metrics
               - method: "GET"
                 path: "^/metrics$"
-{{- end }}

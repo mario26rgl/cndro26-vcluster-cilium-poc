@@ -1,0 +1,22 @@
+namespace: tenant-one
+resources:
+  - ../../base
+patches:
+  - target:
+      group: cilium.io
+      version: v2
+      kind: CiliumNetworkPolicy
+      name: allow-kubelet-health-checks
+    patch: |-
+      - op: replace
+        path: /spec/endpointSelector/matchLabels/vcluster.loft.sh~1managed-by
+        value: tenant-one
+  - target:
+      group: cilium.io
+      version: v2
+      kind: CiliumNetworkPolicy
+      name: metrics-app-scrape
+    patch: |-
+      - op: replace
+        path: /spec/endpointSelector/matchLabels/vcluster.loft.sh~1managed-by
+        value: tenant-one

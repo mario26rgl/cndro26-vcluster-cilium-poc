@@ -1,0 +1,20 @@
+{{- $vclusterName := .Values.vcluster_config.name -}}
+{{- $cnpType := default "vanilla" .Values.vcluster_config.cnp -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ $vclusterName }}-cnps
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mario26rgl/cndro26-vcluster-cilium-poc.git
+    targetRevision: main
+    path: platform/kubernetes/cnp/kustomize/overlays/{{ $cnpType }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ $vclusterName }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

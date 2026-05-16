@@ -1,0 +1,6 @@
+resources:
+  - cnp-health.yaml
+  - cnp-scrape.yaml
+
+# This base contains plain CiliumNetworkPolicy resources extracted from the vcluster chart.
+# Overlays set `namespace` and patch `vcluster.loft.sh/managed-by` to the tenant name.

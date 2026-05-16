@@ -2,6 +2,7 @@ tenants:
 - name: tenant-one
   namespace: tenant-one
   project: tenant-one
+  cnp: vanilla
   chartVersion: "0.33.1"
   sourceRepos:
   - https://github.com/mario26rgl/cndro26-vcluster-cilium-poc.git

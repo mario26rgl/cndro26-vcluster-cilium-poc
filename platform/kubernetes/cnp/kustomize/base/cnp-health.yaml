@@ -1,18 +1,14 @@
-{{- if .Values.healthcheck.enabled }}
-{{- $vclusterNamespace := .Values.vcluster_config.namespace -}}
-{{- $vclusterName := .Values.vcluster_config.name -}}
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
   name: allow-kubelet-health-checks
-  namespace: {{ $vclusterNamespace }}
 spec:
   endpointSelector:
     matchLabels:
-      vcluster.loft.sh/managed-by: {{ $vclusterName }}
+      vcluster.loft.sh/managed-by: vcluster-placeholder
   ingress:
   - fromCIDR:
-    - 10.0.0.0/16  # Node subnet (kubelet IP)
+    - 10.0.0.0/16
     toPorts:
     - ports:
       - port: "80"
@@ -21,4 +17,3 @@ spec:
         http:
         - method: 'GET'
           path: '/health'
-{{- end }}
